@@ -1,94 +1,71 @@
-var titulo = document.querySelector(".titulo");
-titulo.textContent = "Aparecida Nutricionista";
+$(function(){
+    $(".titulo").text("Aparecida Nutricionista");
+    calcula_tabela_imc();
+    add_paciente();
+    removerPaciente();
+    filtrarPaciente();
+    importarXML();
+});
 
-function calcula_imc(peso,altura){
-    var imc = peso / (altura * altura);
-    return imc.toFixed(2);
-}
-function calcula_tabela_imc(){
-    var pacientes = document.querySelectorAll(".paciente");
-    for (var i = 0; i < pacientes.length; i++) {
-        var paciente = pacientes[i];
-        var tdPeso = paciente.querySelector(".info-peso");
-        var peso = tdPeso.textContent;
-        var tdAltura = paciente.querySelector(".info-altura");
-        var altura = tdAltura.textContent;
-        var tdImc = paciente.querySelector(".info-imc");
-        var pesoEhValido = validaPeso(peso);
-        var alturaEhValida = validaAltura(altura);
+const calcula_imc = (peso,altura) => (peso / (altura * altura)).toFixed(2);
+
+const calcula_tabela_imc = () => {
+    let pacientes = $(".paciente");
+    for (let i = 0; i < pacientes.length; i++) {
+        let paciente = pacientes[i];
+        let tdPeso = paciente.querySelector(".info-peso");
+        let peso = tdPeso.textContent;
+        let tdAltura = paciente.querySelector(".info-altura");
+        let altura = tdAltura.textContent;
+        let tdImc = paciente.querySelector(".info-imc");
+        let pesoEhValido = validaPeso(peso);
+        let alturaEhValida = validaAltura(altura);
 
         if (!pesoEhValido) {
-            console.log("Peso inválido!");
             pesoEhValido = false;
             tdImc.textContent = "Peso inválido";
             paciente.classList.add("paciente-invalido");
         }
         if (!alturaEhValida) {
-            console.log("Altura inválida!");
             alturaEhValida = false;
             tdImc.textContent = "Altura inválida";
-            paciente.classList.add("paciente-invalido");
+            paciente.addClass("paciente-invalido");
         }
-        if (pesoEhValido && alturaEhValida) {
-            tdImc.textContent = calcula_imc(peso,altura);
-        }
+        if (pesoEhValido && alturaEhValida) tdImc.textContent = calcula_imc(peso,altura);
     }
 }
 
 //////////////////////////////////////////////
-function validaPeso(peso){
-
-    if (peso >= 0 && peso <= 1000) {
-        return true;
-    } else {
-        return false;
-    }
+const validaPeso = peso =>{
+    if (peso >= 0 && peso <= 1000) return true;
+    else return false;
 }
-function validaAltura(altura) {
-
-    if (altura >= 0 && altura <= 3.0) {
-        return true;
-    } else {
-        return false;
-    }
+const validaAltura = altura => {
+    if (altura >= 0 && altura <= 3.0) return true;
+    else return false;
 }
-function validaGordura(gordura) {
-
-    if (gordura >= 0 && gordura <= 100) {
-        return true;
-    } else {
-        return false;
-    }
+const validaGordura = gordura => {
+    if (gordura >= 0 && gordura <= 100) return true;
+    else return false;
 }
-function validaPaciente(paciente){
-    var erros = [];
-
+const validaPaciente = paciente => {
+    let erros = [];
     if (paciente.nome.length==0) erros.push("O nome não pode ser em branco!");
-
     if (paciente.gordura.length == 0) erros.push("A gordura não pode ser em branco");
-
     if (paciente.peso.length == 0) erros.push("O peso não pode ser em branco");
-
     if (paciente.altura.length == 0) erros.push("A altura não pode ser em branco");
-
     if (!validaPeso(paciente.peso)) erros.push("Peso é inválido");
-
     if (!validaAltura(paciente.altura)) erros.push("Altura é inválida");
-
     if(!validaGordura(paciente.gordura)) erros.push("% de gordura é inválida!");
-
     return erros;
 }
-function exibeMensagensDeErro(erros){
-    var ul = document.querySelector("#mensagens-erro");
+const exibeMensagensDeErro = erros => {
+    let ul = $("#mensagens-erro");
 
-    ul.innerHTML = "";
+    ul.html = "";
 
     erros.forEach(function(erro){
-        var li = document.createElement("li");
-        li.textContent = erro;
-        console.log(li);
-        ul.appendChild(li);
+        ul.add("li").text(erro);
     });
 }
 //////////////////////////////////////////////
@@ -96,8 +73,8 @@ function exibeMensagensDeErro(erros){
 //~
 
 //////////////////////////////////////////////
-function pegaDadosForm(form){
-    var paciente = {
+const pegaDadosForm = form => {
+    let paciente = {
         nome: form.nome.value,
         peso: form.peso.value,
         altura: form.altura.value,
@@ -106,15 +83,15 @@ function pegaDadosForm(form){
     }
     return paciente;
 }// aux add_paciente()
-function addTd(dado,classe){
-    var td = document.createElement("td");
+const addTd = (dado,classe) => {
+    let td = document.createElement("td");
     td.textContent = dado;
     td.classList.add(classe);
 
     return td;
 }// aux add_paciente()
-function addTr(paciente){
-    var pacienteTr = document.createElement("tr");
+const addTr = paciente => {
+    let pacienteTr = document.createElement("tr");
     pacienteTr.classList.add("paciente");
 
     pacienteTr.appendChild(addTd(paciente.nome,    "info-nome"));
@@ -125,16 +102,16 @@ function addTr(paciente){
 
     return pacienteTr;
 }// aux add_paciente()
-function add_paciente(){
-    var botaoAdd = document.querySelector("#adicionar-paciente");
+const add_paciente = () => {
+    let botaoAdd = $("#adicionar-paciente");
 
-    botaoAdd.addEventListener("click", function(event){
+    botaoAdd.click( function(event){
         event.preventDefault();
-        var form = document.querySelector("#form-adciona");
-        var paciente = pegaDadosForm(form);
+        let form = document.querySelector("#form-adciona");
+        let paciente = pegaDadosForm(form);
 
-        var erros = validaPaciente(paciente);
-        console.log(erros);
+        let erros = validaPaciente(paciente);
+
         if(erros.length > 0){
             exibeMensagensDeErro(erros);
             return;
@@ -143,63 +120,48 @@ function add_paciente(){
         adicionaPacienteNaTabela(paciente);
 
         form.reset();
-        var mensagensErro = document.querySelector("#mensagens-erro");
-        mensagensErro.innerHTML = "";
+        let mensagensErro = $("#mensagens-erro");
+        mensagensErro.html = "";
 
     })
 }
-function adicionaPacienteNaTabela(paciente) {
-    var pacienteTr = addTr(paciente);
-    var tabela = document.querySelector("#tabela-pacientes");
-    tabela.appendChild(pacienteTr);
-}
+const adicionaPacienteNaTabela = paciente => $("#tabela-pacientes").append(addTr(paciente));
+
 ////////////////////////////////////////////
 
 //~
 
 //////////////////////////////////////////////
-function removerPaciente() {
-    var tabela = document.querySelector("#tabela");
-    tabela.addEventListener("dblclick", function(event){
-        var alvoEvento = event.target; //td
-        var paiDoAlvo = alvoEvento.parentNode; //tr
+const removerPaciente = () =>  $("#tabela").on("dblclick", function(event){
+    $(event.target.parentNode).addClass("fadeOut");
+    setInterval(function() {
+        event.target.parentNode.remove();
+    }, 500);
+});
 
-        paiDoAlvo.classList.add("fadeOut");
-
-        setTimeout(function() {
-            paiDoAlvo.remove();
-        }, 500);
-
-    });
-}
 //////////////////////////////////////////////
 
 //~
 
 //////////////////////////////////////////////
-function filtrarPaciente() {
-    var campoFiltro = document.querySelector("#filtrar-tabela");
+const filtrarPaciente = () => {
+    $("#filtrar-tabela").on("input", function(){
 
-    campoFiltro.addEventListener("input", function(){
-        console.log(this.value);
-        var pacientes = document.querySelectorAll(".paciente");
+        let pacientes = $(".paciente");
 
         if (this.value.length > 0) {
-            for (var i = 0; i < pacientes.length; i++) {
-                var paciente = pacientes[i];
-                var tdNome = paciente.querySelector(".info-nome");
-                var nome = tdNome.textContent;
-                var expressao = new RegExp(this.value, "i"); //expressao regular, "i" significa que vai procurar maiusculo e minusculo
+            for (let i = 0; i < pacientes.length; i++) {
+                let paciente = pacientes[i];
+                let tdNome = paciente.querySelector(".info-nome");
+                let nome = tdNome.textContent;
+                let expressao = new RegExp(this.value, "i"); //expressao regular, "i" significa que vai procurar maiusculo e minusculo
 
-                if (!expressao.test(nome)) {
-                    paciente.classList.add("invisivel");
-                } else {
-                    paciente.classList.remove("invisivel");
-                }//.test pesquisa cada 'pedaço' inserido, ex 'p' , 'pa', 'paulo'
+                if (!expressao.test(nome)) paciente.classList.add("invisivel");
+                else paciente.classList.remove("invisivel");
             }
         } else {
-            for (var i = 0; i < pacientes.length; i++) {
-                var paciente = pacientes[i];
+            for (let i = 0; i < pacientes.length; i++) {
+                let paciente = pacientes[i];
                 paciente.classList.remove("invisivel");
             }//mostra a tabela quando o campo de busca for vazio
         }
@@ -210,30 +172,27 @@ function filtrarPaciente() {
 //~
 
 //////////////////////////////////////////////
-function importarXML(){
-    var botaoAdicionar = document.querySelector("#buscar-pacientes");
+const importarXML = () => {
+    let botaoAdicionar = $("#buscar-pacientes");
 
-    botaoAdicionar.addEventListener("click", function(){
+    botaoAdicionar.click(function(){
 
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
 
         xhr.open("GET", "https://api-pacientes.herokuapp.com/pacientes");
 
         xhr.addEventListener("load", function() {
 
-            var erroAjax = document.querySelector("#erro-ajax");
+            let erroAjax = $("#erro-ajax");
 
             if (xhr.status == 200) {
-                erroAjax.classList.add("invisivel");
-                var resposta = xhr.responseText;
-                var pacientes = JSON.parse(resposta);//extrai o conteudo de texto e transforma em um objeto javascript
+                erroAjax.addClass("invisivel");
+                let pacientes = JSON.parse(xhr.responseText);//extrai o conteudo de texto e transforma em um objeto javascript
 
                 pacientes.forEach(function(paciente) {
                     adicionaPacienteNaTabela(paciente);
                 });
-            } else {
-                erroAjax.classList.remove("invisivel");
-            }
+            }else erroAjax.removeClass("invisivel");
 
         });
 
@@ -241,9 +200,3 @@ function importarXML(){
     });
 }
 //////////////////////////////////////////////
-
-calcula_tabela_imc();
-add_paciente();
-removerPaciente();
-filtrarPaciente();
-importarXML();
